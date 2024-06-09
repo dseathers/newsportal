@@ -1,27 +1,33 @@
 // src/components/NewsList.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Card, Button, Row, Col, Container } from 'react-bootstrap';
 
 const NewsList = () => {
-  const newsItems = [
-    { id: 1, title: 'Berita 1', content: 'Konten berita 1' },
-    { id: 2, title: 'Berita 2', content: 'Konten berita 2' },
-    { id: 3, title: 'Berita 3', content: 'Konten berita 3' },
-    { id: 4, title: 'Berita 1', content: 'Konten berita 1' },
-    { id: 5, title: 'Berita 2', content: 'Konten berita 2' },
-    { id: 6, title: 'Berita 3', content: 'Konten berita 3' },
-  ];
+  const [newsItems, setNewsItems] = useState([]);
+
+  useEffect(() => {
+    // Fetch data from the API
+    axios.get('https://newsapi.org/v2/everything?q=keyword&apiKey=a6958eb648d24c2ebc8c0cfe995cad4c')
+      .then(response => {
+        setNewsItems(response.data.articles)
+      })
+      .catch(error => {
+        console.error('There was an error fetching the data!', error);
+      });
+  }, []);
 
   return (
     <Container className="mt-4">
       <Row>
-        {newsItems.map(news => (
-          <Col key={news.id} sm={12} md={6} lg={4} className="mb-4">
+        {newsItems.map((news, index) => (
+          <Col key={index} sm={12} md={6} lg={4} className="mb-4">
             <Card>
+              <Card.Img variant="top" src={news.urlToImage} />
               <Card.Body>
                 <Card.Title>{news.title}</Card.Title>
-                <Card.Text>{news.content}</Card.Text>
-                <Button variant="primary">Baca Selengkapnya</Button>
+                <Card.Text>{news.description}</Card.Text>
+                <Button variant="primary" href={news.url} target="_blank">Baca Selengkapnya</Button>
               </Card.Body>
             </Card>
           </Col>
